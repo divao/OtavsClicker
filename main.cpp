@@ -9,9 +9,11 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "ListaCadastral.cpp"
 #include "Background.h"
 #include "BackOnigiri.h"
 #include "OtavsTitle.h"
+#include "Melhoria.h"
 #include "Otavs.h"
 #include "ClickOnigiri.h"
 #include "Creditos.h"
@@ -23,6 +25,7 @@ using namespace std;
 const int WIDTH = 1080;
 const int HEIGHT = 720;
 const int NUM_CLICK_ONIGIRIS = 20;
+const int NUM_MELHORIAS = 8;
 
 //Musicas e efeitos sonoros
 ALLEGRO_SAMPLE *omfgDogs = NULL;
@@ -57,16 +60,25 @@ int main(void){
 	int otavsTwistFrame = 0;
 	int curOnigiri = 0;
 	int valorDoClick = 1;
+	int vaiAcabar = 0;
+	
+	int melhoriaXinicial = 20;
+	int melhoriaYinicial = 100;
+	int custo = 99999;
 
 	//object variables
 	Background back;
 	BackOnigiri backOnigiri[16];
 	OtavsTitle otavsTitle;
+	Melhoria melhoria[NUM_MELHORIAS];
+	ListaCadastral<int> listaAntes;
+	ListaCadastral<int> listaDepois;
 	Otavs otavs;
 	ClickOnigiri clickOnigiri[NUM_CLICK_ONIGIRIS];
 	OtavsTitle otavsTwist;
 	Creditos creditos;
 	int playWidth = 0, playHeight = 0, playMouseWidth = 0, playMouseHeight = 0, twistWidth = 0, twistHeight = 0, twistMouseWidth = 0, twistMouseHeight = 0;
+	int melhoriaXantes[NUM_MELHORIAS];
 
 	//Allegro variables
 	ALLEGRO_DISPLAY *display = NULL;
@@ -81,12 +93,18 @@ int main(void){
 	ALLEGRO_BITMAP *playMouse = NULL;
 	ALLEGRO_BITMAP *infosImage = NULL;
 	ALLEGRO_BITMAP *curOnigiriImage = NULL;
+	ALLEGRO_BITMAP *lojaImage = NULL;
+	ALLEGRO_BITMAP *inventarioImage = NULL;
+	ALLEGRO_BITMAP *melhoriasSpriteImage = NULL;
+	ALLEGRO_BITMAP *checkImage = NULL;
+	ALLEGRO_BITMAP *vazioImage = NULL;
 	ALLEGRO_BITMAP *otavsImage = NULL;
 	ALLEGRO_BITMAP *clickOnigiriImage = NULL;
 	ALLEGRO_BITMAP *otavsTwistImage = NULL;
 	ALLEGRO_BITMAP *twistTextoImage = NULL;
 	ALLEGRO_BITMAP *twistButton = NULL;
 	ALLEGRO_BITMAP *twistMouse = NULL;
+	ALLEGRO_BITMAP *fade = NULL;
 	ALLEGRO_BITMAP *creditosImage = NULL;
 
 	//Initialization Functions
@@ -141,6 +159,11 @@ int main(void){
 	playButton = al_load_bitmap("img/play128.png");
 	playMouse = al_load_bitmap("img/playMouse.png");
 	infosImage = al_load_bitmap("img/infos.png");
+	lojaImage = al_load_bitmap("img/loja.png");
+	inventarioImage = al_load_bitmap("img/inventario.png");
+	melhoriasSpriteImage = al_load_bitmap("img/melhoriasSprite.png");
+	checkImage = al_load_bitmap("img/check.png");
+	vazioImage = al_load_bitmap("img/vazio.png");
 	curOnigiriImage = al_load_bitmap("img/curOnigiriNew.png");
 	otavsImage = al_load_bitmap("img/otavsSpriteSheet.png");
 	clickOnigiriImage = al_load_bitmap("img/clickSprite.png");
@@ -148,6 +171,7 @@ int main(void){
 	twistTextoImage = al_load_bitmap("img/twistTexto.png");
 	twistButton = al_load_bitmap("img/twistButton.png");
 	twistMouse = al_load_bitmap("img/twistMouse.png");
+	fade = al_load_bitmap("img/fade.png");
 	creditosImage = al_load_bitmap("img/creditos.png");
 	
 	fontTimes = al_load_font("fontes/timesbd.ttf", 32, 0);
@@ -182,6 +206,47 @@ int main(void){
 	
 	otavsTitle.InitOtavsTitle(WIDTH / 2, HEIGHT / 2 + 20, 230, 370, otavsTitleImage);
 	
+	for(int i = 0; i < NUM_MELHORIAS; i++){	
+		switch(i){
+			case 0:
+				custo = 50;
+				melhoria[i].InitMelhoria(i, melhoriaXinicial, melhoriaYinicial, custo, melhoriasSpriteImage);
+				break;
+			case 1:
+				custo = 200;
+				melhoria[i].InitMelhoria(i, melhoriaXinicial, melhoriaYinicial + melhoria[i].getFrameHeight() + 2, custo, melhoriasSpriteImage);
+				break;
+			case 2:
+				custo = 400;
+				melhoria[i].InitMelhoria(i, melhoriaXinicial, melhoriaYinicial + (melhoria[i].getFrameHeight() * 2) + 4, custo, melhoriasSpriteImage);
+				break;
+			case 3:
+				custo = 2000;
+				melhoria[i].InitMelhoria(i, melhoriaXinicial, melhoriaYinicial + (melhoria[i].getFrameHeight() * 3) + 6, custo, melhoriasSpriteImage);
+				break;
+			case 4:
+				custo = 4000;
+				melhoria[i].InitMelhoria(i, melhoriaXinicial, melhoriaYinicial + (melhoria[i].getFrameHeight() * 4) + 8, custo, melhoriasSpriteImage);
+				break;
+			case 5:
+				custo = 16000;
+				melhoria[i].InitMelhoria(i, melhoriaXinicial, melhoriaYinicial + (melhoria[i].getFrameHeight() * 5) + 10, custo, melhoriasSpriteImage);
+				break;
+			case 6:
+				custo = 32000;
+				melhoria[i].InitMelhoria(i, melhoriaXinicial, melhoriaYinicial + (melhoria[i].getFrameHeight() * 6) + 12, custo, melhoriasSpriteImage);
+				break;
+			case 7:
+				custo = 96000;
+				melhoria[i].InitMelhoria(i, melhoriaXinicial, melhoriaYinicial + (melhoria[i].getFrameHeight() * 7) + 14, custo, melhoriasSpriteImage);
+				break;
+		}
+		melhoriaXantes[i] = melhoria[i].getX();
+		melhoria[i].setCurFrame(0);
+		listaAntes.Insere(i);
+		
+	}
+	
 	otavs.InitOtavs(WIDTH / 2, HEIGHT / 2, otavsImage);
 	
 	for(int initCont = 0; initCont < NUM_CLICK_ONIGIRIS; initCont++){
@@ -210,6 +275,10 @@ int main(void){
 			if(state == TITLE){
 			}
 			else if(state == PLAYING){
+				if(!listaAntes.EstaNaLista(5)){
+					isOtavsDeOculos = true;
+				}
+				
 				if(posX >= WIDTH / 2 - 100 && posX <= WIDTH / 2 + 84 && posY >= 190 + 34 && posY <= 190 + 290){
 					al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK);
 					if(isMouseEsquerdoApertado){
@@ -273,6 +342,18 @@ int main(void){
 							curOnigiri += valorDoClick;
 							if(curOnigiri >= 99999){
 								curOnigiri = 99999;
+							}
+						}
+						for(int i = 0; i < NUM_MELHORIAS; i++){
+							if(posX >= melhoria[i].getX() && posX <= melhoria[i].getX() + melhoria[i].getFrameWidth() && 
+								posY >= melhoria[i].getY() && posY <= melhoria[i].getY() + melhoria[i].getFrameHeight()){
+									if(curOnigiri >= melhoria[i].getCusto() && melhoria[i].isLive()){
+										valorDoClick *= 2;
+										curOnigiri -= melhoria[i].getCusto();
+										listaAntes.Retira(i);
+										listaDepois.Insere(i);
+										melhoria[i].setLive(false);
+									}
 							}
 						}
 						
@@ -401,6 +482,29 @@ int main(void){
 				backOnigiri[i].DrawBackOnigiri();
 				}
 				
+				al_draw_bitmap(lojaImage, 20, 25, 0);
+				al_draw_bitmap(inventarioImage, 740, 25, 0);
+				
+				for(int i = 0; i < NUM_MELHORIAS; i++){
+					if(listaAntes.EstaNaLista(i)){
+						if(curOnigiri >= melhoria[i].getCusto() / 2 && curOnigiri < melhoria[i].getCusto() && melhoria[i].isLive()){
+							melhoria[i].setCurFrame(1);
+						}else if(curOnigiri >= melhoria[i].getCusto() && melhoria[i].isLive()){
+							melhoria[i].setCurFrame(2);
+						}
+						
+						al_draw_bitmap(vazioImage, 740, melhoria[i].getY(), 0);
+					}else{
+						melhoria[i].setX(740);
+						al_draw_bitmap(checkImage, melhoriaXantes[i], melhoria[i].getY(), 0);
+					}
+					
+					if(!melhoria[i].isLive()){
+						melhoria[i].setCurFrame(3);
+					}
+					melhoria[i].DrawMelhoria();
+				}
+				
 				al_draw_bitmap(curOnigiriImage, WIDTH / 2 - 78, 100 - 20, 0);
 				al_draw_textf(fontTimes, al_map_rgb(223, 143, 0), WIDTH / 2 - 12, 82, ALLEGRO_ALIGN_LEFT, "%d", curOnigiri);
 				
@@ -409,6 +513,14 @@ int main(void){
 				
 				for(int drawCont = 0; drawCont < NUM_CLICK_ONIGIRIS; drawCont++){
 					clickOnigiri[drawCont].DrawClickOnigiri();
+				}
+				
+				if(listaAntes.Vazia()){
+					vaiAcabar++;
+					al_draw_tinted_bitmap(fade, al_map_rgba_f(0, 0, 0, vaiAcabar * 0.005), 0, 0, 0);	
+					if(vaiAcabar >= 200){
+						ChangeState(state, TWIST);
+					}
 				}
 				
 			}else if(state == TWIST){
@@ -448,12 +560,16 @@ int main(void){
 	al_destroy_sample_instance(sadHokageInstance);
 	al_destroy_sample(arnoldSonim);
 	al_destroy_sample_instance(arnoldSonimInstance);
+	al_destroy_font(fontTimes);
 	al_destroy_bitmap(backImage);
 	al_destroy_bitmap(backOnigiriImage);
 	al_destroy_bitmap(titleImage);
 	al_destroy_bitmap(otavsTitleImage);
 	al_destroy_bitmap(playButton);
 	al_destroy_bitmap(playMouse);
+	al_destroy_bitmap(melhoriasSpriteImage);
+	al_destroy_bitmap(checkImage);
+	al_destroy_bitmap(vazioImage);
 	al_destroy_bitmap(curOnigiriImage);
 	al_destroy_bitmap(otavsImage);
 	al_destroy_bitmap(clickOnigiriImage);
@@ -461,6 +577,7 @@ int main(void){
 	al_destroy_bitmap(twistTextoImage);
 	al_destroy_bitmap(twistButton);
 	al_destroy_bitmap(twistMouse);
+	al_destroy_bitmap(fade);
 	al_destroy_bitmap(creditosImage);
 	al_destroy_display(display);						//destroy our display object
 
