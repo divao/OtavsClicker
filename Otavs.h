@@ -9,23 +9,21 @@ class Otavs{
 		
 		void setX(int);
 		void setY(int);
-		void setScale(double);
+		void setCurFrame(int);
 		
 		int getX();
 		int getY();
-		int getMaxFrame();
+		int getCurFrame();
 		int getFrameWidth();
 		int getFrameHeight();
-		double getScale();
 		
 	private:
 		int x;
 		int y;
 		
-		int maxFrame;
+		int curFrame;
 		int frameWidth;
 		int frameHeight;
-		double scale;
 		
 		ALLEGRO_BITMAP *image;
 };
