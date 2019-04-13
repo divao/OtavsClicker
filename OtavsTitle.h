@@ -4,7 +4,7 @@
 class OtavsTitle{
 	public:
 		OtavsTitle();
-		void InitOtavsTitle(int, int, ALLEGRO_BITMAP *);
+		void InitOtavsTitle(int, int, int, int, ALLEGRO_BITMAP *);
 		void DrawOtavsTitle();
 		
 		void setX(int);

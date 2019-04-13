@@ -7,7 +7,7 @@ Creditos::Creditos(){
 	live = false;
 	x = (0 + 1080 - 720) / 2;
 	y = 720;
-	yFinal = 720 + 298; //720 + altura da imagem
+	yFinal = 720 + 720; //720 + altura da imagem
 }
 
 void Creditos::InitCreditos(ALLEGRO_BITMAP *image){
@@ -15,7 +15,7 @@ void Creditos::InitCreditos(ALLEGRO_BITMAP *image){
 	live = false;
 	x = (0 + 1080 - 720) / 2;
 	y = 720;
-	yFinal = 720 + 298; //720 + altura da imagem
+	yFinal = 720 + 720; //720 + altura da imagem
 	this->image = image;
 }
 

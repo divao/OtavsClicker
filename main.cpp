@@ -29,10 +29,12 @@ ALLEGRO_SAMPLE *omfgDogs = NULL;
 ALLEGRO_SAMPLE_INSTANCE *omfgDogsInstance = NULL;
 ALLEGRO_SAMPLE *klezmerParty = NULL;
 ALLEGRO_SAMPLE_INSTANCE *klezmerPartyInstance = NULL;
+ALLEGRO_SAMPLE *sadHokage = NULL;
+ALLEGRO_SAMPLE_INSTANCE *sadHokageInstance = NULL; 
 ALLEGRO_SAMPLE *arnoldSonim = NULL;
 ALLEGRO_SAMPLE_INSTANCE *arnoldSonimInstance = NULL;
 
-enum STATE{TITLE, INSTRUCTIONS, PLAYING, END};
+enum STATE{TITLE, INSTRUCTIONS, PLAYING, TWIST, END};
 
 //Funcoes globais
 void ChangeState(int &state, int newState);
@@ -52,6 +54,7 @@ int main(void){
 	bool isOtavsDeOculos = false;
 	bool isMouseEsquerdoApertado = false;
 	int clickOnigCont = 0;
+	int otavsTwistFrame = 0;
 
 	//object variables
 	Background back;
@@ -59,8 +62,9 @@ int main(void){
 	OtavsTitle otavsTitle;
 	Otavs otavs;
 	ClickOnigiri clickOnigiri[NUM_CLICK_ONIGIRIS];
+	OtavsTitle otavsTwist;
 	Creditos creditos;
-	int playWidth = 0, playHeight = 0, playMouseWidth = 0, playMouseHeight = 0;
+	int playWidth = 0, playHeight = 0, playMouseWidth = 0, playMouseHeight = 0, twistWidth = 0, twistHeight = 0, twistMouseWidth = 0, twistMouseHeight = 0;
 
 	//Allegro variables
 	ALLEGRO_DISPLAY *display = NULL;
@@ -76,6 +80,10 @@ int main(void){
 	ALLEGRO_BITMAP *infosImage = NULL;
 	ALLEGRO_BITMAP *otavsImage = NULL;
 	ALLEGRO_BITMAP *clickOnigiriImage = NULL;
+	ALLEGRO_BITMAP *otavsTwistImage = NULL;
+	ALLEGRO_BITMAP *twistTextoImage = NULL;
+	ALLEGRO_BITMAP *twistButton = NULL;
+	ALLEGRO_BITMAP *twistMouse = NULL;
 	ALLEGRO_BITMAP *creditosImage = NULL;
 
 	//Initialization Functions
@@ -104,6 +112,7 @@ int main(void){
 	omfgDogs = al_load_sample("audio/omfgDogs.ogg");
 	klezmerParty = al_load_sample("audio/klezmerParty.ogg");
 	arnoldSonim = al_load_sample("audio/arnoldSonim.ogg");
+	sadHokage = al_load_sample("audio/sadHokage.ogg");
 	
 	omfgDogsInstance = al_create_sample_instance(omfgDogs);
 	al_set_sample_instance_playmode(omfgDogsInstance, ALLEGRO_PLAYMODE_LOOP);
@@ -112,6 +121,10 @@ int main(void){
 	klezmerPartyInstance = al_create_sample_instance(klezmerParty);
 	al_set_sample_instance_playmode(klezmerPartyInstance, ALLEGRO_PLAYMODE_LOOP);
 	al_attach_sample_instance_to_mixer(klezmerPartyInstance, al_get_default_mixer());
+	
+	sadHokageInstance = al_create_sample_instance(sadHokage);
+	al_set_sample_instance_playmode(sadHokageInstance, ALLEGRO_PLAYMODE_LOOP);
+	al_attach_sample_instance_to_mixer(sadHokageInstance, al_get_default_mixer());
 	
 	arnoldSonimInstance = al_create_sample_instance(arnoldSonim);
 	al_set_sample_instance_playmode(arnoldSonimInstance, ALLEGRO_PLAYMODE_ONCE);
@@ -127,12 +140,20 @@ int main(void){
 	infosImage = al_load_bitmap("img/infos.png");
 	otavsImage = al_load_bitmap("img/otavsSpriteSheet.png");
 	clickOnigiriImage = al_load_bitmap("img/clickSprite.png");
+	otavsTwistImage = al_load_bitmap("img/otavsTwist.png");
+	twistTextoImage = al_load_bitmap("img/twistTexto.png");
+	twistButton = al_load_bitmap("img/twistButton.png");
+	twistMouse = al_load_bitmap("img/twistMouse.png");
 	creditosImage = al_load_bitmap("img/creditos.png");
 
 	playWidth = al_get_bitmap_width(playButton);
 	playHeight = al_get_bitmap_height(playButton);
 	playMouseWidth = al_get_bitmap_width(playMouse);
 	playMouseHeight = al_get_bitmap_height(playMouse);
+	twistWidth = al_get_bitmap_width(twistButton);
+	twistHeight = al_get_bitmap_height(twistButton);
+	twistMouseWidth = al_get_bitmap_width(twistMouse);
+	twistMouseHeight = al_get_bitmap_height(twistMouse);
 
 //	srand(time(NULL));
 
@@ -153,13 +174,15 @@ int main(void){
 			backOnigiri[i].InitBackOnigiri(i % 4 * 260 + 90, 3 * 180 + 28, backOnigiriImage);	
 	}
 	
-	otavsTitle.InitOtavsTitle(WIDTH / 2, HEIGHT / 2 + 20, otavsTitleImage); // !!!!!!! ALTERAR PARA POSICIONAR O TITULO !!!!!!!!
+	otavsTitle.InitOtavsTitle(WIDTH / 2, HEIGHT / 2 + 20, 230, 370, otavsTitleImage);
 	
-	otavs.InitOtavs(190, HEIGHT / 2, otavsImage);
+	otavs.InitOtavs(WIDTH / 2, HEIGHT / 2, otavsImage);
 	
 	for(int initCont = 0; initCont < NUM_CLICK_ONIGIRIS; initCont++){
 		clickOnigiri[initCont].InitClickOnigiri(clickOnigiriImage);
 	}
+	
+	otavsTwist.InitOtavsTitle(181, HEIGHT / 2, 282, 435, otavsTwistImage);
 	
 	creditos.InitCreditos(creditosImage);
 	creditos.ReadyCreditos();
@@ -181,7 +204,7 @@ int main(void){
 			if(state == TITLE){
 			}
 			else if(state == PLAYING){
-				if(posX >= 40 + 50 && posX <= 40 + 234 && posY >= 190 + 34 && posY <= 190 + 290){
+				if(posX >= WIDTH / 2 - 100 && posX <= WIDTH / 2 + 84 && posY >= 190 + 34 && posY <= 190 + 290){
 					al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK);
 					if(isMouseEsquerdoApertado){
 						otavsFrame = 3;
@@ -235,7 +258,7 @@ int main(void){
 					}
 					
 				}else if(state == PLAYING){
-						if(posX >= 40 + 50 && posX <= 40 + 234 && posY >= 190 + 34 && posY <= 190 + 290){
+						if(posX >= WIDTH / 2 - 100 && posX <= WIDTH / 2 + 84 && posY >= 190 + 34 && posY <= 190 + 290){
 							clickOnigiri[clickOnigCont].ClickClickOnigiri(posX, posY);
 							clickOnigCont++;
 							if(clickOnigCont >= NUM_CLICK_ONIGIRIS){
@@ -243,6 +266,13 @@ int main(void){
 							}
 						}
 						
+				}
+				else if(state == TWIST){
+					if((posX >= 701 - twistWidth / 2) && (posX <= 701 - twistWidth / 2 + twistWidth) &&
+						(posY >= (3 * HEIGHT / 4) - 20 - twistHeight / 2) && (posY <= (3 * HEIGHT / 4) - 20 - twistHeight / 2 + twistHeight)){
+							ChangeState(state, END);
+							al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+					}
 				}
 				else if(state == END){
 					
@@ -267,6 +297,8 @@ int main(void){
 					}else if(state == INSTRUCTIONS){
 						ChangeState(state, PLAYING);
 					}else if(state == PLAYING){
+						ChangeState(state, TWIST);
+					}else if(state == TWIST){
 						ChangeState(state, END);
 					}
 					break;
@@ -306,7 +338,7 @@ int main(void){
 			}
 			
 			//if geral 1
-			if(state == TITLE || state == INSTRUCTIONS || state == PLAYING){
+			if(state == TITLE || state == INSTRUCTIONS || state == PLAYING || state == TWIST){
 				back.DrawBackground();
 			}
 			
@@ -366,7 +398,24 @@ int main(void){
 					clickOnigiri[drawCont].DrawClickOnigiri();
 				}
 				
-			}else if(state == END){
+			}else if(state == TWIST){
+				otavsTwistFrame = (contadorGeral / 30) % 2;
+				otavsTwist.setCurFrame(otavsTwistFrame);
+				otavsTwist.DrawOtavsTitle();
+				
+				al_draw_bitmap(twistTextoImage, 362, (HEIGHT / 4) - 40, 0);
+				
+				if((posX >= 701 - twistWidth / 2) && (posX <= 701 - twistWidth / 2 + twistWidth) &&
+					(posY >= (3 * HEIGHT / 4) - 20 - twistHeight / 2) && (posY <= (3 * HEIGHT / 4) - 20 - twistHeight / 2 + twistHeight)){
+						al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK);
+						al_draw_bitmap(twistMouse, 701 - twistMouseWidth / 2, (3 * HEIGHT / 4) - 20 - twistMouseHeight / 2, 0);
+				}else{
+					al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+					al_draw_bitmap(twistButton, 701 - twistWidth / 2, (3 * HEIGHT / 4) - 20 - twistHeight / 2, 0);
+				}
+		
+			}
+			else if(state == END){
 				
 			}
 		
@@ -378,8 +427,14 @@ int main(void){
 	
 	al_destroy_event_queue(event_queue);
 	al_destroy_timer(timer);
+	al_destroy_sample(klezmerParty);
+	al_destroy_sample_instance(klezmerPartyInstance);
 	al_destroy_sample(omfgDogs);
 	al_destroy_sample_instance(omfgDogsInstance);
+	al_destroy_sample(sadHokage);
+	al_destroy_sample_instance(sadHokageInstance);
+	al_destroy_sample(arnoldSonim);
+	al_destroy_sample_instance(arnoldSonimInstance);
 	al_destroy_bitmap(backImage);
 	al_destroy_bitmap(backOnigiriImage);
 	al_destroy_bitmap(titleImage);
@@ -388,6 +443,10 @@ int main(void){
 	al_destroy_bitmap(playMouse);
 	al_destroy_bitmap(otavsImage);
 	al_destroy_bitmap(clickOnigiriImage);
+	al_destroy_bitmap(otavsTwistImage);
+	al_destroy_bitmap(twistTextoImage);
+	al_destroy_bitmap(twistButton);
+	al_destroy_bitmap(twistMouse);
 	al_destroy_bitmap(creditosImage);
 	al_destroy_display(display);						//destroy our display object
 
@@ -403,6 +462,9 @@ void ChangeState(int &state, int newState){
 	else if(state == INSTRUCTIONS){
 		al_stop_sample_instance(klezmerPartyInstance);
 	}
+	else if(state == TWIST){
+		al_stop_sample_instance(sadHokageInstance);
+	}
 	else if(state == END){
 		al_stop_sample_instance(arnoldSonimInstance);
 	}
@@ -416,6 +478,9 @@ void ChangeState(int &state, int newState){
 		al_play_sample_instance(omfgDogsInstance);
 	}
 	else if(state == INSTRUCTIONS){
+	}
+	else if(state == TWIST){
+		al_play_sample_instance(sadHokageInstance);
 	}
 	else if(state == END){
 		al_play_sample_instance(arnoldSonimInstance);

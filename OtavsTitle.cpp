@@ -6,17 +6,17 @@ OtavsTitle::OtavsTitle(){
 	this->x = 0;
 	this->y = 0;
 	this->curFrame = 0;
-	this->frameWidth = 230;
-	this->frameHeight = 370;
+	this->frameWidth = 0;
+	this->frameHeight = 0;
 	this->image = NULL;
 }
 
-void OtavsTitle::InitOtavsTitle(int x, int y, ALLEGRO_BITMAP *image){
+void OtavsTitle::InitOtavsTitle(int x, int y, int frameWidth, int frameHeight, ALLEGRO_BITMAP *image){
 	this->x = x;
 	this->y = y;
 	this->curFrame = 0;
-	this->frameWidth = 230;    
-	this->frameHeight = 370;
+	this->frameWidth = frameWidth;    
+	this->frameHeight = frameHeight;
 	this->image = image;
 }
 
