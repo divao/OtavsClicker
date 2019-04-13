@@ -55,6 +55,8 @@ int main(void){
 	bool isMouseEsquerdoApertado = false;
 	int clickOnigCont = 0;
 	int otavsTwistFrame = 0;
+	int curOnigiri = 0;
+	int valorDoClick = 1;
 
 	//object variables
 	Background back;
@@ -70,7 +72,7 @@ int main(void){
 	ALLEGRO_DISPLAY *display = NULL;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
-//	ALLEGRO_FONT *fontDevil = NULL;
+	ALLEGRO_FONT *fontTimes = NULL;
 	ALLEGRO_BITMAP *backImage = NULL;
 	ALLEGRO_BITMAP *backOnigiriImage = NULL;
 	ALLEGRO_BITMAP *titleImage = NULL;
@@ -78,6 +80,7 @@ int main(void){
 	ALLEGRO_BITMAP *playButton = NULL;
 	ALLEGRO_BITMAP *playMouse = NULL;
 	ALLEGRO_BITMAP *infosImage = NULL;
+	ALLEGRO_BITMAP *curOnigiriImage = NULL;
 	ALLEGRO_BITMAP *otavsImage = NULL;
 	ALLEGRO_BITMAP *clickOnigiriImage = NULL;
 	ALLEGRO_BITMAP *otavsTwistImage = NULL;
@@ -138,6 +141,7 @@ int main(void){
 	playButton = al_load_bitmap("img/play128.png");
 	playMouse = al_load_bitmap("img/playMouse.png");
 	infosImage = al_load_bitmap("img/infos.png");
+	curOnigiriImage = al_load_bitmap("img/curOnigiriNew.png");
 	otavsImage = al_load_bitmap("img/otavsSpriteSheet.png");
 	clickOnigiriImage = al_load_bitmap("img/clickSprite.png");
 	otavsTwistImage = al_load_bitmap("img/otavsTwist.png");
@@ -145,6 +149,8 @@ int main(void){
 	twistButton = al_load_bitmap("img/twistButton.png");
 	twistMouse = al_load_bitmap("img/twistMouse.png");
 	creditosImage = al_load_bitmap("img/creditos.png");
+	
+	fontTimes = al_load_font("fontes/timesbd.ttf", 32, 0);
 
 	playWidth = al_get_bitmap_width(playButton);
 	playHeight = al_get_bitmap_height(playButton);
@@ -263,6 +269,10 @@ int main(void){
 							clickOnigCont++;
 							if(clickOnigCont >= NUM_CLICK_ONIGIRIS){
 								clickOnigCont = 0;
+							}
+							curOnigiri += valorDoClick;
+							if(curOnigiri >= 99999){
+								curOnigiri = 99999;
 							}
 						}
 						
@@ -391,6 +401,9 @@ int main(void){
 				backOnigiri[i].DrawBackOnigiri();
 				}
 				
+				al_draw_bitmap(curOnigiriImage, WIDTH / 2 - 78, 100 - 20, 0);
+				al_draw_textf(fontTimes, al_map_rgb(223, 143, 0), WIDTH / 2 - 12, 82, ALLEGRO_ALIGN_LEFT, "%d", curOnigiri);
+				
 				otavs.setCurFrame(otavsFrame);
 				otavs.DrawOtavs();
 				
@@ -441,6 +454,7 @@ int main(void){
 	al_destroy_bitmap(otavsTitleImage);
 	al_destroy_bitmap(playButton);
 	al_destroy_bitmap(playMouse);
+	al_destroy_bitmap(curOnigiriImage);
 	al_destroy_bitmap(otavsImage);
 	al_destroy_bitmap(clickOnigiriImage);
 	al_destroy_bitmap(otavsTwistImage);
