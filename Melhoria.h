@@ -11,6 +11,7 @@ class Melhoria{
 		void setY(int);
 		void setCurFrame(int);
 		void setLive(bool);
+		void setJorge(bool);
 		
 		int getX();
 		int getY();
@@ -19,6 +20,7 @@ class Melhoria{
 		int getFrameHeight();
 		int getCusto();
 		bool isLive();
+		bool isJorge();
 		
 		bool operator!=(const Melhoria &) const;
 		bool operator==(const Melhoria &) const;
@@ -29,6 +31,7 @@ class Melhoria{
 		int y;
 		int custo;
 		bool live;
+		bool jorge;
 		
 		int curFrame;
 		int maxFrame;

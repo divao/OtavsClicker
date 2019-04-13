@@ -8,6 +8,7 @@ Melhoria::Melhoria(){
 	y = 0;
 	custo = 99999;
 	live = false;
+	jorge = false;
 		
 	curFrame = 0;
 	maxFrame = 3;
@@ -23,6 +24,7 @@ void Melhoria::InitMelhoria(int id, int x, int y, int custo, ALLEGRO_BITMAP *ima
 	this->y = y;
 	this->custo = custo;
 	this->live = true;
+	this->jorge = false;
 		
 	curFrame = 0;
 	maxFrame = 3;
@@ -92,4 +94,12 @@ void Melhoria::setLive(bool live){
 
 bool Melhoria::isLive(){
 	return this->live;
+}
+
+void Melhoria::setJorge(bool jorge){
+	this->jorge = jorge;
+}
+
+bool Melhoria::isJorge(){
+	return this->jorge;
 }

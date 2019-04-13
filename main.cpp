@@ -65,6 +65,12 @@ int main(void){
 	int melhoriaXinicial = 20;
 	int melhoriaYinicial = 100;
 	int custo = 99999;
+	
+	int segundos = 0;
+	int minutos = 0;
+	bool homem = false;
+	int caracolFrame = 0;
+	int contadorPlaying = 0;
 
 	//object variables
 	Background back;
@@ -76,6 +82,7 @@ int main(void){
 	Otavs otavs;
 	ClickOnigiri clickOnigiri[NUM_CLICK_ONIGIRIS];
 	OtavsTitle otavsTwist;
+	OtavsTitle caracolAlado;
 	Creditos creditos;
 	int playWidth = 0, playHeight = 0, playMouseWidth = 0, playMouseHeight = 0, twistWidth = 0, twistHeight = 0, twistMouseWidth = 0, twistMouseHeight = 0;
 	int melhoriaXantes[NUM_MELHORIAS];
@@ -104,8 +111,15 @@ int main(void){
 	ALLEGRO_BITMAP *twistTextoImage = NULL;
 	ALLEGRO_BITMAP *twistButton = NULL;
 	ALLEGRO_BITMAP *twistMouse = NULL;
+	ALLEGRO_BITMAP *caracolImage = NULL;
 	ALLEGRO_BITMAP *fade = NULL;
 	ALLEGRO_BITMAP *creditosImage = NULL;
+	ALLEGRO_SAMPLE *nham = NULL;
+	ALLEGRO_SAMPLE *uee = NULL;
+	ALLEGRO_SAMPLE *caracol = NULL;
+	ALLEGRO_SAMPLE *partiuBauru = NULL;
+	ALLEGRO_SAMPLE *otavsNinja = NULL;
+	ALLEGRO_SAMPLE *sim = NULL;
 
 	//Initialization Functions
 	if(!al_init())										//initialize Allegro
@@ -171,8 +185,16 @@ int main(void){
 	twistTextoImage = al_load_bitmap("img/twistTexto.png");
 	twistButton = al_load_bitmap("img/twistButton.png");
 	twistMouse = al_load_bitmap("img/twistMouse.png");
+	caracolImage = al_load_bitmap("img/caracol.png");
 	fade = al_load_bitmap("img/fade.png");
 	creditosImage = al_load_bitmap("img/creditos.png");
+	
+	nham = al_load_sample("audio/nham.ogg");
+	uee = al_load_sample("audio/uee.ogg");
+	caracol = al_load_sample("audio/caracol.ogg");
+	partiuBauru = al_load_sample("audio/partiuBauru.ogg");
+	otavsNinja = al_load_sample("audio/otavsNinja.ogg");
+	sim = al_load_sample("audio/sim.ogg");
 	
 	fontTimes = al_load_font("fontes/timesbd.ttf", 32, 0);
 
@@ -184,8 +206,6 @@ int main(void){
 	twistHeight = al_get_bitmap_height(twistButton);
 	twistMouseWidth = al_get_bitmap_width(twistMouse);
 	twistMouseHeight = al_get_bitmap_height(twistMouse);
-
-//	srand(time(NULL));
 
 	ChangeState(state, TITLE);
 
@@ -254,6 +274,7 @@ int main(void){
 	}
 	
 	otavsTwist.InitOtavsTitle(181, HEIGHT / 2, 282, 435, otavsTwistImage);
+	caracolAlado.InitOtavsTitle(WIDTH / 2 + 6, 680, 69, 64, caracolImage);
 	
 	creditos.InitCreditos(creditosImage);
 	creditos.ReadyCreditos();
@@ -299,6 +320,19 @@ int main(void){
 				for(int updateCont = 0; updateCont < NUM_CLICK_ONIGIRIS; updateCont++){	
 					clickOnigiri[updateCont].UpdateClickOnigiri();
 				}
+				
+				contadorPlaying++;
+				if(contadorPlaying >= 60){
+					contadorPlaying = 0;
+					segundos++;
+				}
+				if(segundos >= 60){
+					segundos = 0;
+					minutos++;
+				}
+				if(minutos >= 12){
+					homem = true;
+				}
 			}
 			else if(state == END){
 				creditos.UpdateCreditos();
@@ -308,6 +342,7 @@ int main(void){
 			if(contadorGeral >= 60){
 				contadorGeral = 0;
 			}
+			
 		}
 		else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
 			done = true;
@@ -351,6 +386,32 @@ int main(void){
 										valorDoClick *= 2;
 										curOnigiri -= melhoria[i].getCusto();
 										listaAntes.Retira(i);
+										switch(i){
+											case 0:
+												al_play_sample(nham, 3, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
+												break;
+											case 1:
+												al_play_sample(uee, 2, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
+												break;
+											case 2:
+												al_play_sample(nham, 3, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
+												break;
+											case 3:
+												al_play_sample(caracol, 3, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
+												break;
+											case 4:
+												al_play_sample(otavsNinja, 3, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
+												break;
+											case 5:
+												al_play_sample(sim, 2.5, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
+												break;
+											case 6:
+												al_play_sample(partiuBauru, 2, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
+												break;
+											case 7:
+												al_play_sample(uee, 2, 0, 1, ALLEGRO_PLAYMODE_ONCE, 0);
+												break;
+										}
 										listaDepois.Insere(i);
 										melhoria[i].setLive(false);
 									}
@@ -381,25 +442,12 @@ int main(void){
 				case ALLEGRO_KEY_ESCAPE:
 					done = true;
 					break;
-				// !!!!!!!!!!!!!!!!!!!!!!!!! TESTE PARA MUDANCA DE ESTADOS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! XITAO ARRUDA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				case ALLEGRO_KEY_SPACE:
-					if(state == TITLE){
-						ChangeState(state, INSTRUCTIONS);
-					}else if(state == INSTRUCTIONS){
-						ChangeState(state, PLAYING);
-					}else if(state == PLAYING){
-						ChangeState(state, TWIST);
-					}else if(state == TWIST){
-						ChangeState(state, END);
+					if(state == PLAYING){
+						valorDoClick = 50;
 					}
 					break;
-				// !!!!!!!!!!!!!!!!!!!!!!!!! TESTE PARA COLOCAR/TIRAR OCULOS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				case ALLEGRO_KEY_ENTER:
-					if(isOtavsDeOculos){
-						isOtavsDeOculos = false;
-					}else if(!isOtavsDeOculos){
-						isOtavsDeOculos = true;
-					}
 			}
 		}
 		else if(ev.type == ALLEGRO_EVENT_KEY_UP){
@@ -489,8 +537,14 @@ int main(void){
 					if(listaAntes.EstaNaLista(i)){
 						if(curOnigiri >= melhoria[i].getCusto() / 2 && curOnigiri < melhoria[i].getCusto() && melhoria[i].isLive()){
 							melhoria[i].setCurFrame(1);
+							melhoria[i].setJorge(true);
 						}else if(curOnigiri >= melhoria[i].getCusto() && melhoria[i].isLive()){
 							melhoria[i].setCurFrame(2);
+							melhoria[i].setJorge(true);
+						}else if(curOnigiri < melhoria[i].getCusto() && !melhoria[i].isJorge()){
+							melhoria[i].setCurFrame(0);
+						}else if(curOnigiri < melhoria[i].getCusto() && melhoria[i].isJorge()){
+							melhoria[i].setCurFrame(1);
 						}
 						
 						al_draw_bitmap(vazioImage, 740, melhoria[i].getY(), 0);
@@ -543,7 +597,26 @@ int main(void){
 			else if(state == END){
 				
 			}
-		
+			
+			if(state == PLAYING || state == TWIST){
+				if(homem){
+					caracolFrame = (contadorGeral / 10) % 2;
+					caracolAlado.setCurFrame(caracolFrame);
+					caracolAlado.DrawOtavsTitle();
+				}else{
+					al_draw_textf(fontTimes, al_map_rgb(223, 143, 0), WIDTH / 2, 680, ALLEGRO_ALIGN_CENTRE, "%02d:%02d", minutos, segundos);
+				}
+			}
+			if(state == PLAYING){
+				if(listaAntes.Vazia()){
+					vaiAcabar++;
+					al_draw_tinted_bitmap(fade, al_map_rgba_f(0, 0, 0, vaiAcabar * 0.005), 0, 0, 0);	
+					if(vaiAcabar >= 200){
+						ChangeState(state, TWIST);
+					}
+				}
+			}
+			
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(0,0,0));
 		}
@@ -577,7 +650,14 @@ int main(void){
 	al_destroy_bitmap(twistTextoImage);
 	al_destroy_bitmap(twistButton);
 	al_destroy_bitmap(twistMouse);
+	al_destroy_bitmap(caracolImage);
 	al_destroy_bitmap(fade);
+	al_destroy_sample(nham);
+	al_destroy_sample(uee);
+	al_destroy_sample(caracol);
+	al_destroy_sample(partiuBauru);
+	al_destroy_sample(otavsNinja);
+	al_destroy_sample(sim);
 	al_destroy_bitmap(creditosImage);
 	al_destroy_display(display);						//destroy our display object
 
