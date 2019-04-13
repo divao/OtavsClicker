@@ -11,6 +11,7 @@
 
 #include "Background.h"
 #include "BackOnigiri.h"
+#include "OtavsTitle.h"
 #include "Otavs.h"
 #include "ClickOnigiri.h"
 #include "Creditos.h"
@@ -44,6 +45,9 @@ int main(void){
 	int state = -1;
 	int posX = WIDTH / 2;
 	int posY = HEIGHT / 2;
+	
+	int contadorGeral = 0;
+	int otavsTitleFrame = 0;
 	int otavsFrame = 0;
 	bool isOtavsDeOculos = false;
 	bool isMouseEsquerdoApertado = false;
@@ -52,17 +56,23 @@ int main(void){
 	//object variables
 	Background back;
 	BackOnigiri backOnigiri[16];
+	OtavsTitle otavsTitle;
 	Otavs otavs;
 	ClickOnigiri clickOnigiri[NUM_CLICK_ONIGIRIS];
 	Creditos creditos;
+	int playWidth = 0, playHeight = 0, playMouseWidth = 0, playMouseHeight = 0;
 
 	//Allegro variables
 	ALLEGRO_DISPLAY *display = NULL;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
-	ALLEGRO_FONT *fontDevil = NULL;
+//	ALLEGRO_FONT *fontDevil = NULL;
 	ALLEGRO_BITMAP *backImage = NULL;
 	ALLEGRO_BITMAP *backOnigiriImage = NULL;
+	ALLEGRO_BITMAP *titleImage = NULL;
+	ALLEGRO_BITMAP *otavsTitleImage = NULL;
+	ALLEGRO_BITMAP *playButton = NULL;
+	ALLEGRO_BITMAP *playMouse = NULL;
 	ALLEGRO_BITMAP *otavsImage = NULL;
 	ALLEGRO_BITMAP *clickOnigiriImage = NULL;
 	ALLEGRO_BITMAP *creditosImage = NULL;
@@ -109,9 +119,18 @@ int main(void){
 	backImage = al_load_bitmap("img/background.png");
 	backOnigiriImage = al_load_bitmap("img/backOnigiri.png");
 	al_convert_mask_to_alpha(backOnigiriImage, al_map_rgb(33, 45, 84));
+	titleImage = al_load_bitmap("img/title.png");
+	otavsTitleImage = al_load_bitmap("img/otavsTitleSprite.png");
+	playButton = al_load_bitmap("img/play128.png");
+	playMouse = al_load_bitmap("img/playMouse.png");
 	otavsImage = al_load_bitmap("img/otavsSpriteSheet.png");
 	clickOnigiriImage = al_load_bitmap("img/clickSprite.png");
 	creditosImage = al_load_bitmap("img/creditos.png");
+
+	playWidth = al_get_bitmap_width(playButton);
+	playHeight = al_get_bitmap_height(playButton);
+	playMouseWidth = al_get_bitmap_width(playMouse);
+	playMouseHeight = al_get_bitmap_height(playMouse);
 
 //	srand(time(NULL));
 
@@ -131,6 +150,8 @@ int main(void){
 	for(int i = 12; i < 16; i++){
 			backOnigiri[i].InitBackOnigiri(i % 4 * 260 + 90, 3 * 180 + 28, backOnigiriImage);	
 	}
+	
+	otavsTitle.InitOtavsTitle(WIDTH / 2, HEIGHT / 2 + 20, otavsTitleImage); // !!!!!!! ALTERAR PARA POSICIONAR O TITULO !!!!!!!!
 	
 	otavs.InitOtavs(190, HEIGHT / 2, otavsImage);
 	
@@ -159,6 +180,7 @@ int main(void){
 			}
 			else if(state == PLAYING){
 				if(posX >= 40 + 50 && posX <= 40 + 234 && posY >= 190 + 34 && posY <= 190 + 290){
+					al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK);
 					if(isMouseEsquerdoApertado){
 						otavsFrame = 3;
 					}else{
@@ -166,6 +188,7 @@ int main(void){
 					}
 					
 				}else{
+					al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
 					if(isOtavsDeOculos){
 						otavsFrame = 1;
 					}else{
@@ -180,6 +203,8 @@ int main(void){
 			else if(state == END){
 				creditos.UpdateCreditos();
 			}
+			
+			contadorGeral++;
 		
 		}
 		else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
@@ -191,15 +216,29 @@ int main(void){
 				isMouseEsquerdoApertado = true;
 				
 				if(state == TITLE){
+					if((posX >= WIDTH / 2 - playWidth / 2) && (posX <= WIDTH / 2 - playWidth / 2 + playWidth) &&
+						(posY >= 630 - playHeight / 2) && (posY <= 630 - playHeight / 2 + playHeight)){
+							ChangeState(state, INSTRUCTIONS);
+							al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+					}
 				
 				}else if(state == INSTRUCTIONS){
 					
+					if((posX >= WIDTH / 2 - playWidth / 2) && (posX <= WIDTH / 2 - playWidth / 2 + playWidth) &&
+						(posY >= 630 - playHeight / 2) && (posY <= 630 - playHeight / 2 + playHeight)){
+							ChangeState(state, PLAYING);
+							al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+					}
+					
 				}else if(state == PLAYING){
-						clickOnigiri[clickOnigCont].ClickClickOnigiri(posX, posY);
-						clickOnigCont++;
-						if(clickOnigCont >= NUM_CLICK_ONIGIRIS){
-							clickOnigCont = 0;
+						if(posX >= 40 + 50 && posX <= 40 + 234 && posY >= 190 + 34 && posY <= 190 + 290){
+							clickOnigiri[clickOnigCont].ClickClickOnigiri(posX, posY);
+							clickOnigCont++;
+							if(clickOnigCont >= NUM_CLICK_ONIGIRIS){
+								clickOnigCont = 0;
+							}
 						}
+						
 				}
 				else if(state == END){
 					
@@ -265,7 +304,39 @@ int main(void){
 			//if geral 1
 			if(state == TITLE || state == INSTRUCTIONS || state == PLAYING){
 				back.DrawBackground();
+			}
 			
+			//if um por um 2
+			if(state == TITLE){
+				al_draw_bitmap(titleImage, WIDTH / 2 - 333 / 2, 20, 0);
+				
+				otavsTitleFrame = (contadorGeral / 30) % 2;
+				otavsTitle.setCurFrame(otavsTitleFrame);
+				otavsTitle.DrawOtavsTitle();
+				
+				if((posX >= WIDTH / 2 - playWidth / 2) && (posX <= WIDTH / 2 - playWidth / 2 + playWidth) &&
+					(posY >= 630 - playHeight / 2) && (posY <= 630 - playHeight / 2 + playHeight)){
+						al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK);
+						al_draw_bitmap(playMouse, WIDTH / 2 - playMouseWidth / 2, 630 - playMouseHeight / 2, 0);
+				}else{
+					al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+					al_draw_bitmap(playButton, WIDTH / 2 - playWidth / 2, 630 - playHeight / 2, 0);
+				}
+				
+			}
+			else if(state == INSTRUCTIONS){
+				
+				if((posX >= WIDTH / 2 - playWidth / 2) && (posX <= WIDTH / 2 - playWidth / 2 + playWidth) &&
+					(posY >= 630 - playHeight / 2) && (posY <= 630 - playHeight / 2 + playHeight)){
+						al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK);
+						al_draw_bitmap(playMouse, WIDTH / 2 - playMouseWidth / 2, 630 - playMouseHeight / 2, 0);
+				}else{
+					al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+					al_draw_bitmap(playButton, WIDTH / 2 - playWidth / 2, 630 - playHeight / 2, 0);
+				}
+				
+			}
+			else if(state == PLAYING){
 				for(int i = 0; i < 16; i++){
 					if(++backOnigiri[i].frameCountX >= backOnigiri[i].frameDelay){
 						if(++backOnigiri[i].curFrameX >= backOnigiri[i].maxFrameX)
@@ -281,16 +352,7 @@ int main(void){
 				
 				backOnigiri[i].DrawBackOnigiri();
 				}
-			}
-			
-			//if um por um 2
-			if(state == TITLE){
 				
-			}
-			else if(state == INSTRUCTIONS){
-				
-			}
-			else if(state == PLAYING){
 				otavs.setCurFrame(otavsFrame);
 				otavs.DrawOtavs();
 				
@@ -314,6 +376,10 @@ int main(void){
 	al_destroy_sample_instance(omfgDogsInstance);
 	al_destroy_bitmap(backImage);
 	al_destroy_bitmap(backOnigiriImage);
+	al_destroy_bitmap(titleImage);
+	al_destroy_bitmap(otavsTitleImage);
+	al_destroy_bitmap(playButton);
+	al_destroy_bitmap(playMouse);
 	al_destroy_bitmap(otavsImage);
 	al_destroy_bitmap(clickOnigiriImage);
 	al_destroy_bitmap(creditosImage);
