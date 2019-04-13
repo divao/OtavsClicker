@@ -4,9 +4,10 @@
 CPP      = g++.exe
 CC       = gcc.exe
 WINDRES  = windres.exe
-OBJ      = main.o Background.o BackOnigiri.o Otavs.o ClickOnigiri.o Creditos.o OtavsTitle.o Melhoria.o ListaCadastral.o
-LINKOBJ  = main.o Background.o BackOnigiri.o Otavs.o ClickOnigiri.o Creditos.o OtavsTitle.o Melhoria.o ListaCadastral.o
-LIBS     = -L"C:/MinGW/lib" -L"C:/MinGW/mingw32/lib" -static-libstdc++ -static-libgcc -lalleg -lallegro-5.0.10-mt -lallegro_acodec-5.0.10-mt -lallegro_audio-5.0.10-mt -lallegro_color-5.0.10-mt -lallegro_dialog-5.0.10-mt -lallegro_font-5.0.10-mt -lallegro_image-5.0.10-mt -lallegro_memfile-5.0.10-mt -lallegro_physfs-5.0.10-mt -lallegro_primitives-5.0.10-mt -lallegro_ttf-5.0.10-mt -static-libgcc -lgcc_eh
+RES      = OtavsClicker_private.res
+OBJ      = main.o Background.o BackOnigiri.o Otavs.o ClickOnigiri.o Creditos.o OtavsTitle.o Melhoria.o ListaCadastral.o $(RES)
+LINKOBJ  = main.o Background.o BackOnigiri.o Otavs.o ClickOnigiri.o Creditos.o OtavsTitle.o Melhoria.o ListaCadastral.o $(RES)
+LIBS     = -L"C:/MinGW/lib" -L"C:/MinGW/mingw32/lib" -static-libstdc++ -static-libgcc -lalleg -lallegro-5.0.10-mt -lallegro_acodec-5.0.10-mt -lallegro_audio-5.0.10-mt -lallegro_color-5.0.10-mt -lallegro_dialog-5.0.10-mt -lallegro_font-5.0.10-mt -lallegro_image-5.0.10-mt -lallegro_memfile-5.0.10-mt -lallegro_physfs-5.0.10-mt -lallegro_primitives-5.0.10-mt -lallegro_ttf-5.0.10-mt -static-libgcc -lgcc_eh -mwindows
 INCS     = -I"C:/MinGW/include" -I"C:/MinGW/lib/gcc/mingw32/5.3.0/include"
 CXXINCS  = -I"C:/MinGW/include" -I"C:/MinGW/lib/gcc/mingw32/5.3.0/include" -I"C:/MinGW/lib/gcc/mingw32/5.3.0/include/c++"
 BIN      = OtavsClicker.exe
@@ -50,3 +51,7 @@ Melhoria.o: Melhoria.cpp
 
 ListaCadastral.o: ListaCadastral.cpp
 	$(CPP) -c ListaCadastral.cpp -o ListaCadastral.o $(CXXFLAGS)
+
+OtavsClicker_private.res: OtavsClicker_private.rc 
+	$(WINDRES) -i OtavsClicker_private.rc --input-format=rc -o OtavsClicker_private.res -O coff 
+

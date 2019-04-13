@@ -39,6 +39,9 @@ ALLEGRO_SAMPLE_INSTANCE *arnoldSonimInstance = NULL;
 
 enum STATE{TITLE, INSTRUCTIONS, PLAYING, TWIST, END};
 
+ListaCadastral<int> listaAntes;
+ListaCadastral<int> listaDepois;
+
 //Funcoes globais
 void ChangeState(int &state, int newState);
 
@@ -77,8 +80,6 @@ int main(void){
 	BackOnigiri backOnigiri[16];
 	OtavsTitle otavsTitle;
 	Melhoria melhoria[NUM_MELHORIAS];
-	ListaCadastral<int> listaAntes;
-	ListaCadastral<int> listaDepois;
 	Otavs otavs;
 	ClickOnigiri clickOnigiri[NUM_CLICK_ONIGIRIS];
 	OtavsTitle otavsTwist;
@@ -332,6 +333,7 @@ int main(void){
 				}
 				if(minutos >= 12){
 					homem = true;
+					minutos = 12;
 				}
 			}
 			else if(state == END){
@@ -441,12 +443,6 @@ int main(void){
 			switch(ev.keyboard.keycode){
 				case ALLEGRO_KEY_ESCAPE:
 					done = true;
-					break;
-				// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! XITAO ARRUDA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				case ALLEGRO_KEY_SPACE:
-					if(state == PLAYING){
-						valorDoClick = 50;
-					}
 					break;
 			}
 		}
@@ -668,6 +664,9 @@ void ChangeState(int &state, int newState){
 	if(state == TITLE){
 	}
 	else if(state == PLAYING){
+		for(int i = 0; i < NUM_MELHORIAS; i++){
+			listaDepois.Retira(i);
+		}
 		al_stop_sample_instance(omfgDogsInstance);
 	}
 	else if(state == INSTRUCTIONS){
