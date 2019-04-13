@@ -27,8 +27,8 @@ const int NUM_CLICK_ONIGIRIS = 20;
 //Musicas e efeitos sonoros
 ALLEGRO_SAMPLE *omfgDogs = NULL;
 ALLEGRO_SAMPLE_INSTANCE *omfgDogsInstance = NULL;
-ALLEGRO_SAMPLE *temShopRemix = NULL;
-ALLEGRO_SAMPLE_INSTANCE *temShopRemixInstance = NULL;
+ALLEGRO_SAMPLE *klezmerParty = NULL;
+ALLEGRO_SAMPLE_INSTANCE *klezmerPartyInstance = NULL;
 ALLEGRO_SAMPLE *arnoldSonim = NULL;
 ALLEGRO_SAMPLE_INSTANCE *arnoldSonimInstance = NULL;
 
@@ -73,6 +73,7 @@ int main(void){
 	ALLEGRO_BITMAP *otavsTitleImage = NULL;
 	ALLEGRO_BITMAP *playButton = NULL;
 	ALLEGRO_BITMAP *playMouse = NULL;
+	ALLEGRO_BITMAP *infosImage = NULL;
 	ALLEGRO_BITMAP *otavsImage = NULL;
 	ALLEGRO_BITMAP *clickOnigiriImage = NULL;
 	ALLEGRO_BITMAP *creditosImage = NULL;
@@ -101,16 +102,16 @@ int main(void){
 	al_reserve_samples(10);
 
 	omfgDogs = al_load_sample("audio/omfgDogs.ogg");
-	temShopRemix = al_load_sample("audio/temShopRemix.ogg");
+	klezmerParty = al_load_sample("audio/klezmerParty.ogg");
 	arnoldSonim = al_load_sample("audio/arnoldSonim.ogg");
 	
 	omfgDogsInstance = al_create_sample_instance(omfgDogs);
 	al_set_sample_instance_playmode(omfgDogsInstance, ALLEGRO_PLAYMODE_LOOP);
 	al_attach_sample_instance_to_mixer(omfgDogsInstance, al_get_default_mixer());
 	
-	temShopRemixInstance = al_create_sample_instance(temShopRemix);
-	al_set_sample_instance_playmode(temShopRemixInstance, ALLEGRO_PLAYMODE_LOOP);
-	al_attach_sample_instance_to_mixer(temShopRemixInstance, al_get_default_mixer());
+	klezmerPartyInstance = al_create_sample_instance(klezmerParty);
+	al_set_sample_instance_playmode(klezmerPartyInstance, ALLEGRO_PLAYMODE_LOOP);
+	al_attach_sample_instance_to_mixer(klezmerPartyInstance, al_get_default_mixer());
 	
 	arnoldSonimInstance = al_create_sample_instance(arnoldSonim);
 	al_set_sample_instance_playmode(arnoldSonimInstance, ALLEGRO_PLAYMODE_ONCE);
@@ -123,6 +124,7 @@ int main(void){
 	otavsTitleImage = al_load_bitmap("img/otavsTitleSprite.png");
 	playButton = al_load_bitmap("img/play128.png");
 	playMouse = al_load_bitmap("img/playMouse.png");
+	infosImage = al_load_bitmap("img/infos.png");
 	otavsImage = al_load_bitmap("img/otavsSpriteSheet.png");
 	clickOnigiriImage = al_load_bitmap("img/clickSprite.png");
 	creditosImage = al_load_bitmap("img/creditos.png");
@@ -205,7 +207,9 @@ int main(void){
 			}
 			
 			contadorGeral++;
-		
+			if(contadorGeral >= 60){
+				contadorGeral = 0;
+			}
 		}
 		else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
 			done = true;
@@ -326,6 +330,8 @@ int main(void){
 			}
 			else if(state == INSTRUCTIONS){
 				
+				al_draw_bitmap(infosImage, 20, 110, 0);
+				
 				if((posX >= WIDTH / 2 - playWidth / 2) && (posX <= WIDTH / 2 - playWidth / 2 + playWidth) &&
 					(posY >= 630 - playHeight / 2) && (posY <= 630 - playHeight / 2 + playHeight)){
 						al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK);
@@ -395,7 +401,7 @@ void ChangeState(int &state, int newState){
 		al_stop_sample_instance(omfgDogsInstance);
 	}
 	else if(state == INSTRUCTIONS){
-		al_stop_sample_instance(temShopRemixInstance);
+		al_stop_sample_instance(klezmerPartyInstance);
 	}
 	else if(state == END){
 		al_stop_sample_instance(arnoldSonimInstance);
@@ -404,7 +410,7 @@ void ChangeState(int &state, int newState){
 	state = newState;
 
 	if(state == TITLE){
-		al_play_sample_instance(temShopRemixInstance);
+		al_play_sample_instance(klezmerPartyInstance);
 	}
 	else if(state == PLAYING){
 		al_play_sample_instance(omfgDogsInstance);
